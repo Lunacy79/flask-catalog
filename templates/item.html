@@ -1,0 +1,25 @@
+<html>
+
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+        </head>
+    <body>
+        <div class = 'pane'>
+            <div class = 'header'>
+<h1>{{item.itemname}}</h1>
+</div>
+
+<div class = 'nameAndPrice'>
+<div>
+    
+    <p>Category: {{item.category}}</p>
+    
+    <p>{{item.description}}</p>
+
+</div>
+
+</div>
+</div>
+</body>
+
+</html>

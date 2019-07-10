@@ -1,0 +1,26 @@
+<html>
+
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+        </head>
+    <body>
+
+<h1>New Item</h1>
+
+<form action="{{ url_for('newMenuItem', restaurant_id=restaurant_id)}}" method= 'post'>
+    <p>Name: </p>
+    <input type= 'text' size='30' name='name'>
+    <p>Description: </p>
+    <input type= 'text' size='30' name='description'>
+    <p>Category: </p>
+    <select name="category" size="5">
+        {% for i in categories %}
+            <option>{{i.categoryname}}</option>
+        {% endfor %}
+    </select>
+    <input type='submit' value = 'Create'>
+</form>
+
+</body>
+
+</html>
