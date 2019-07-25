@@ -118,27 +118,69 @@ def gconnect():
     print("done!")
     return output
 
+@app.route('/gdisconnect')
+def gdisconnect():
+    access_token = login_session.get('access_token')
+    if access_token is None:
+        print('Access Token is None')
+        response = make_response(json.dumps('Current user not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return redirect("/catalog")
+    print('In gdisconnect access token is %s', access_token)
+    print('User name is: ')
+    print(login_session['username'])
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+    print('result is ')
+    print(result)
+    if result['status'] == '200':
+        del login_session['access_token']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return redirect("/catalog")
+    else:
+        response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
 @app.route('/')
 @app.route('/catalog/')
 def catalog():
+        loggedIn = True
+        if 'username' not in login_session:
+                loggedIn = False
         categories = session.query(Category).all()
-        # lastItems = session.query(Item).order_by(Item.time)
-        return render_template('catalog.html', categories=categories)
+        lastItems = session.query(Item).order_by(Item.time).limit(5).all()
+        return render_template('catalog.html', categories=categories, loggedIn=loggedIn, latestItems=lastItems)
 
 @app.route('/catalog/<int:category_id>/items')
 def category(category_id):
+        loggedIn = True
+        if 'username' not in login_session:
+                loggedIn = False
         categories = session.query(Category).all()
         items = session.query(Item).filter_by(category_id = category_id).all()
-        return render_template('category.html', categories=categories, items=items, category_id=category_id)
+        return render_template('category.html', categories=categories, items=items, category_id=category_id, loggedIn=loggedIn)
 
 @app.route('/catalog/<int:item_id>/', methods=['GET', 'POST'])
 def showItem(item_id):
+    loggedIn = True
+    if 'username' not in login_session:
+        loggedIn = False
     item = session.query(Item).filter_by(id = item_id).one()
-    return render_template('item.html', item=item, item_id=item_id)
+    return render_template('item.html', item=item, item_id=item_id, loggedIn=loggedIn)
 # Task 1: Create route for newMenuItem function here
 
 @app.route('/catalog/item/new/', methods=['GET', 'POST'])
 def newItem():
+    loggedIn = True
+    if 'username' not in login_session:
+        return redirect('/login')
     categories = session.query(Category).all()
     if request.method == 'POST':
             newItem = Item(itemname = request.form['name'], description = request.form['description'], category_id = request.form['category'])
@@ -146,13 +188,16 @@ def newItem():
             session.commit()
             return redirect(url_for('catalog'))
     else:
-            return render_template('newitem.html', categories=categories)
-    return "page to create an item. Task 1 complete!"
+            return render_template('newitem.html', categories=categories, loggedIn=loggedIn)
+   
 
 # Task 2: Create route for editMenuItem function here
 
 @app.route('/catalog/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
+    loggedIn = True
+    if 'username' not in login_session:
+        return redirect('/login')
     item = session.query(Item).filter_by(id = item_id).one()
     categories = session.query(Category).all()
     if request.method == 'POST':
@@ -168,13 +213,16 @@ def editItem(item_id):
             flash("item was edited")
             return redirect(url_for('catalog'))
     else:
-            return render_template('edititem.html', editItem = item, item_id = item_id, categories=categories)
-    return "page to edit an item. Task 2 complete!"
+            return render_template('edititem.html', editItem = item, item_id = item_id, categories=categories, loggedIn=loggedIn)
+    
 
 # Task 3: Create a route for deleteMenuItem function here
 
 @app.route('/catalog/<string:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(item_id):
+    loggedIn = True
+    if 'username' not in login_session:
+        return redirect('/login')
     deleteItem = session.query(Item).filter_by(id = item_id).one()
     if request.method == 'POST':
             session.delete(deleteItem)
@@ -182,8 +230,8 @@ def deleteItem(item_id):
             flash("item was deleted")
             return redirect(url_for('catalog'))
     else:
-            return render_template('deleteitem.html', item_id = item_id)
-    return "page to delete an item. Task 3 complete!"
+            return render_template('deleteitem.html', item_id = item_id, loggedIn=loggedIn)
+    
 
 
 

@@ -1,26 +1,18 @@
-<html>
-
-    <head>
-        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-        </head>
-    <body>
-        <div class = 'pane'>
-            <div class = 'header'>
-<h1>{{item.itemname}}</h1>
+{% extends 'base.html' %}
+{% block content %}
+<div class = 'header'>
+    <h1>{{item.itemname}}</h1>
 </div>
 
 <div class = 'nameAndPrice'>
-<div>
+    <div>
     
-    <p>Category: {{item.category.categoryname}}</p>
-    
-    <p>{{item.description}}</p>
-    <a href='{{ url_for("editItem", item_id=item.id)}}'><h2>Edit Item</h2></a></br>
+        <p>Category: {{item.category.categoryname}}</p>
+        
+        <p>{{item.description}}</p>
+        <a href='{{ url_for("editItem", item_id=item.id)}}'><h2>Edit Item</h2></a></br>
+
+    </div>
 
 </div>
-
-</div>
-</div>
-</body>
-
-</html>
+{% endblock %}

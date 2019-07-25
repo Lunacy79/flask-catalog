@@ -1,41 +1,31 @@
-<html>
-
-    <head>
-        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-        </head>
-    <body>
-        <div class = 'pane'>
-            <div class = 'header'>
-<h1>Animals</h1>
-</div>
-
+{% extends 'base.html' %}
+{% block content %}
+<h1>Categories</h1>
 {% for i in categories %}
 <div class = 'nameAndPrice'>
-<div>
+    <div>
 
-<a href='{{url_for("category", category_id=i.id)}}'><h2>{{i.categoryname}}</h2></a></br>
-<a href='{{ url_for("newItem")}}'><h2>Add new Item</h2></a></br>
+        <a href='{{url_for("category", category_id=i.id)}}'><h2>{{i.categoryname}}</h2></a></br>
+        
 
-</div>
+    </div>
 </div>
 
 {% endfor %}
 
 
 <div>
-        {% for i in items %}
-        <div class = 'nameAndPrice'>
+    <a href='{{ url_for("newItem")}}'><h2>Add new Item</h2></a></br>
+    {% for i in items %}
+    <div class = 'nameAndPrice'>
         <div>
         
-        <a href='{{url_for("showItem", item_id=i.id)}}'><h2>{{i.itemname}}</h2></a></br>
+            <a href='{{url_for("showItem", item_id=i.id)}}'><h2>{{i.itemname}}</h2></a></br>
         
         </div>
         
     </div>
-        {% endfor %}
+    {% endfor %}
         
 </div>
-</div>
-</body>
-
-</html>
+{% endblock %}
