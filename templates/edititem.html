@@ -7,23 +7,23 @@
 
 <h1>Edit Item</h1>
 
-<form action="{{ url_for('editMenuItem', restaurant_id=restaurant_id, menu_id=menu_id)}}" method= 'post'>
+<form action="{{ url_for('editItem', item_id = editItem.id)}}" method= 'post'>
         <p>Name: </p>
         <input type= 'text' size='30' name='name' placeholder={{editItem.itemname}}>
         <p>Description: </p>
         <input type= 'text' size='30' name='description' placeholder={{editItem.description}}>
         <p>Category: </p>
-        <select name="category" size="5" placeholder={{editItem.itemname}}>
+        <select name="category" placeholder={{editItem.itemname}}>
             {% for i in categories %}
-                {% if i.categoryname === editItem.category %}
-                    <option selected>{{i.categoryname}}</option>
+                {% if i.id == editItem.category_id %}
+                    <option value="{{i.id}}" selected>{{i.categoryname}}</option>
                 {% else %}
-                    <option>{{i.categoryname}}</option>
+                    <option value="{{i.id}}">{{i.categoryname}}</option>
                 {% endif %}
             {% endfor %}
         </select>
     <input type='submit' value = 'Edit'>
-    <a href="{{url_for('restaurantMenu', restaurant_id = restaurant_id)}}">Cancel</a>
+    <a href="{{url_for('showItem', item_id = editItem.id)}}">Cancel</a>
 </form>
 
 </body>

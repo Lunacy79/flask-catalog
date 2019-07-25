@@ -13,26 +13,27 @@
 <div class = 'nameAndPrice'>
 <div>
 
-<a href='{{url_for("category")}}'><h2>{{i.categoryname}}</h2></a></br>
+<a href='{{url_for("category", category_id=i.id)}}'><h2>{{i.categoryname}}</h2></a></br>
+<a href='{{ url_for("newItem")}}'><h2>Add new Item</h2></a></br>
 
 </div>
-
+</div>
 
 {% endfor %}
-</div>
+
 
 <div>
         {% for i in items %}
         <div class = 'nameAndPrice'>
         <div>
         
-        <a href='{{url_for("editItem")}}'><h2>{{i.itemname}}</h2></a></br>
+        <a href='{{url_for("showItem", item_id=i.id)}}'><h2>{{i.itemname}}</h2></a></br>
         
         </div>
         
-        
+    </div>
         {% endfor %}
-        </div>
+        
 </div>
 </div>
 </body>
