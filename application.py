@@ -25,7 +25,7 @@ session = DBSession()
 app = Flask(__name__)
 
 CLIENT_ID = json.loads(
-    open('client_secrets.json', mode='r', encoding="utf-8").read())['web']['client_id']
+    open('client_secrets.json', 'r').read())['web']['client_id']
 
 @app.route('/login/')
 def showLogin():
@@ -154,8 +154,6 @@ def categoryJSON():
     category = session.query(Category).all()
     items = session.query(Item).all()
     return jsonify(Items=[i.serialize for i in items])
-
-
 
 
 @app.route('/')
