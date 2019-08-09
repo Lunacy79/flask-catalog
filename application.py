@@ -148,6 +148,16 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+# JSON APIs to view Category Information
+@app.route('/catalog/items/JSON')
+def categoryJSON():
+    category = session.query(Category).all()
+    items = session.query(Item).all()
+    return jsonify(Items=[i.serialize for i in items])
+
+
+
+
 @app.route('/')
 @app.route('/catalog/')
 def catalog():

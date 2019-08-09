@@ -5,16 +5,18 @@
     </head>
     
     <body>
-        <div class = 'pane'>
-            <div class = 'header'>
+        <div class = 'container'>
+            <div class = 'header row'>
                 <h1>Catalog App</h1>
                 {% if loggedIn %}
-                    <a href='{{url_for("gdisconnect")}}'><h2>Logout</h2></a></br>
+                    <a class = 'log' href='{{url_for("gdisconnect")}}'><h2>Logout</h2></a>
                 {% else %}
-                    <a href='{{url_for("showLogin")}}'><h2>Login</h2></a></br>
+                    <a class = 'log' href='{{url_for("showLogin")}}'><h2>Login</h2></a>
                 {% endif %}
             </div>
-            {% block content %}{% endblock %}
+            <div class = 'pane'>
+                {% block content %}{% endblock %}
+            </div>
         </div>
         
     </body>

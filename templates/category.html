@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Categories</h1>
+<div class = 'row'>
+    <div class = 'col-left'>
+<h2 class = 'marginb'>Categories</h2>
 {% for i in categories %}
-<div class = 'nameAndPrice'>
+<div>
     <div>
 
         <a href='{{url_for("category", category_id=i.id)}}'><h2>{{i.categoryname}}</h2></a></br>
@@ -12,12 +14,14 @@
 </div>
 
 {% endfor %}
-
+</div>
+<div class = 'col-right'>
 
 <div>
-    <a href='{{ url_for("newItem")}}'><h2>Add new Item</h2></a></br>
+        <h2 class = 'marginb'>Items</h2>
+    <a href='{{ url_for("newItem")}}'>Add new Item</a></br></br>
     {% for i in items %}
-    <div class = 'nameAndPrice'>
+    <div>
         <div>
         
             <a href='{{url_for("showItem", item_id=i.id)}}'><h2>{{i.itemname}}</h2></a></br>
@@ -27,5 +31,7 @@
     </div>
     {% endfor %}
         
+</div>
+</div>
 </div>
 {% endblock %}

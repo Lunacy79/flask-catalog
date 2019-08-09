@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-
-<h1>New Item</h1>
+<div class = 'col'>
+<h2>New Item</h2>
 
 <form action="{{ url_for('newItem')}}" method= 'post'>
     <p>Name: </p>
@@ -16,4 +16,5 @@
     </select>
     <input type='submit' value = 'Create'>
 </form>
+</div>
 {% endblock %}

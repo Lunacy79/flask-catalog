@@ -1,30 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Categories</h1>
-{% if loggedIn %}
+<div class = 'row'>
+    <div class = 'col-left'>
+        <h2 class = 'marginb'>Categories</h2>
+        {% if loggedIn %}
 
-<a href='{{url_for("newItem")}}'>Create new Item</a></br></br></br>
-{% endif %}
-{% for i in categories %}
-<div class = 'nameAndPrice'>
-    <div>
-
-        <a href='{{url_for("category", category_id=i.id)}}'><h2>{{i.categoryname}}</h2></a></br>
-
-    </div>
-
-
-    {% endfor %}
-</div>
-<h1>Latest Items</h1>
-{% for i in latestItems %}
-    <div class = 'nameAndPrice'>
+        <a href='{{url_for("newItem")}}'>Create new Item</a></br>
+        {% endif %}
+        {% for i in categories %}
         <div>
-        
-            <a href='{{url_for("showItem", item_id=i.id)}}'><h2>{{i.itemname}}</h2></a></br>
-        
+
+            <a href='{{url_for("category", category_id=i.id)}}'><h2>{{i.categoryname}}</h2></a></br>
+
         </div>
-        
+        {% endfor %}
     </div>
-{% endfor %}
+    <div class = 'col-right'>
+        <h2 class = 'marginb'>Latest Items</h2>
+        {% for i in latestItems %}
+            <div>
+                <div>
+                
+                    <a href='{{url_for("showItem", item_id=i.id)}}'><h2>{{i.itemname}}</h2></a></br>
+                
+                </div>
+                
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

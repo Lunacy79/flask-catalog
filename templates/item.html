@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class = 'header'>
-    <h1>{{item.itemname}}</h1>
-</div>
+<div>
+<h2>{{item.itemname}}</h2>
 
-<div class = 'nameAndPrice'>
     <div>
     
         <p>Category: {{item.category.categoryname}}</p>
         
         <p>{{item.description}}</p>
-        <a href='{{ url_for("editItem", item_id=item.id)}}'><h2>Edit Item</h2></a></br>
+        <a href='{{ url_for("editItem", item_id=item.id)}}'>Edit Item</a></br>
 
     </div>
 
