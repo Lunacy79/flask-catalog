@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-
-## import CRUD Operations 
+from flask import Flask, render_template, request, redirect
+from flask import url_for, flash, jsonify
 from database_setup import Base, User, Category, Item
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
 from flask import session as login_session
-import random, string
-
+import random
+import string
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
@@ -16,7 +14,7 @@ import json
 from flask import make_response
 import requests
 
-## Create session and connect to DB
+# Create session and connect to DB
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
@@ -27,11 +25,15 @@ app = Flask(__name__)
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 
+
 @app.route('/login/')
 def showLogin():
-        state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
-        login_session['state'] = state
-        return render_template('login.html', STATE=state)
+    state = ''.join(random.choice(
+                                  string.ascii_uppercase + string.digits
+                                  ) for x in range(32))
+    login_session['state'] = state
+    return render_template('login.html', STATE=state)
+
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -76,7 +78,6 @@ def gconnect():
         return response
 
     # Verify that the access token is valid for this app.
-    
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
@@ -87,8 +88,10 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(
+                                json.dumps(
+                                        'Current user is already connected.'),
+                                200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -113,17 +116,22 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += """ style = "width: 300px; height: 300px;
+    border-radius: 150px; -webkit-border-radius: 150px;
+    -moz-border-radius: 150px;"> """
     flash("you are now logged in as %s" % login_session['username'])
     print("done!")
     return output
+
 
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
         print('Access Token is None')
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(
+                                 json.dumps('Current user not connected.'), 401
+                                 )
         response.headers['Content-Type'] = 'application/json'
         return redirect("/catalog")
     print('In gdisconnect access token is %s', access_token)
@@ -144,16 +152,34 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return redirect("/catalog")
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
+        response = make_response(
+                                 json.dumps(
+                                            'Failed to revoke token for user.'
+                                            ), 400
+                                 )
         response.headers['Content-Type'] = 'application/json'
         return response
 
+
 # JSON APIs to view Category Information
 @app.route('/catalog/items/JSON')
-def categoryJSON():
+def itemsJSON():
     category = session.query(Category).all()
     items = session.query(Item).all()
     return jsonify(Items=[i.serialize for i in items])
+
+
+@app.route('/catalog/<int:category_id>/JSON')
+def categoryJSON(category_id):
+    category = session.query(Category).filter_by(id=category_id)
+    items = session.query(Item).filter_by(category_id=category_id).all()
+    return jsonify(Items=[i.serialize for i in items])
+
+
+@app.route('/catalog/item/<int:item_id>/JSON')
+def itemJSON(item_id):
+    item = session.query(Item).filter_by(id=item_id).one()
+    return jsonify(item=item.serialize)
 
 
 @app.route('/')
@@ -163,8 +189,16 @@ def catalog():
         if 'username' not in login_session:
                 loggedIn = False
         categories = session.query(Category).all()
-        lastItems = session.query(Item).order_by(Item.time).limit(5).all()
-        return render_template('catalog.html', categories=categories, loggedIn=loggedIn, latestItems=lastItems)
+        lastItems = session.query(
+                                  Item
+                                  ).order_by(
+                                             Item.time
+                                             ).limit(5).all()
+        return render_template(
+                               'catalog.html', categories=categories,
+                               loggedIn=loggedIn, latestItems=lastItems
+                               )
+
 
 @app.route('/catalog/<int:category_id>/items')
 def category(category_id):
@@ -172,17 +206,26 @@ def category(category_id):
         if 'username' not in login_session:
                 loggedIn = False
         categories = session.query(Category).all()
-        items = session.query(Item).filter_by(category_id = category_id).all()
-        return render_template('category.html', categories=categories, items=items, category_id=category_id, loggedIn=loggedIn)
+        items = session.query(Item).filter_by(category_id=category_id).all()
+        return render_template(
+                               'category.html', categories=categories,
+                               items=items, category_id=category_id,
+                               loggedIn=loggedIn
+                               )
+
 
 @app.route('/catalog/<int:item_id>/', methods=['GET', 'POST'])
 def showItem(item_id):
     loggedIn = True
     if 'username' not in login_session:
         loggedIn = False
-    item = session.query(Item).filter_by(id = item_id).one()
-    return render_template('item.html', item=item, item_id=item_id, loggedIn=loggedIn)
+    item = session.query(Item).filter_by(id=item_id).one()
+    return render_template(
+                           'item.html', item=item,
+                           item_id=item_id, loggedIn=loggedIn
+                           )
 # Task 1: Create route for newMenuItem function here
+
 
 @app.route('/catalog/item/new/', methods=['GET', 'POST'])
 def newItem():
@@ -191,25 +234,39 @@ def newItem():
         return redirect('/login')
     categories = session.query(Category).all()
     if request.method == 'POST':
-            newItem = Item(itemname = request.form['name'], description = request.form['description'], category_id = request.form['category'])
+            newItem = Item(itemname=request.form['name'],
+                           description=request.form['description'],
+                           category_id=request.form['category']
+                           )
             session.add(newItem)
             session.commit()
             return redirect(url_for('catalog'))
     else:
-            return render_template('newitem.html', categories=categories, loggedIn=loggedIn)
-   
-
+            return render_template(
+                                   'newitem.html',
+                                   categories=categories,
+                                   loggedIn=loggedIn
+                                   )
 # Task 2: Create route for editMenuItem function here
+
 
 @app.route('/catalog/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
     loggedIn = True
     if 'username' not in login_session:
         return redirect('/login')
-    item = session.query(Item).filter_by(id = item_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
+    if 'username' != login_session['username']:
+        return "<script>function myFunction() {alert('You\
+        are not authorized to edit this item.\
+        Please create your own item in order\
+        to edit.');}</script><body onload='myFunction()'>"
     categories = session.query(Category).all()
     if request.method == 'POST':
-            editItem = Item(itemname = request.form['name'], description = request.form['description'], category_id = request.form['category'])
+            editItem = Item(itemname=request.form['name'],
+                            description=request.form['description'],
+                            category_id=request.form['category']
+                            )
             if request.form['name']:
                 item.itemname = request.form['name']
             if request.form['description']:
@@ -221,29 +278,35 @@ def editItem(item_id):
             flash("item was edited")
             return redirect(url_for('catalog'))
     else:
-            return render_template('edititem.html', editItem = item, item_id = item_id, categories=categories, loggedIn=loggedIn)
-    
-
+            return render_template('edititem.html',
+                                   editItem=item,
+                                   item_id=item_id,
+                                   categories=categories,
+                                   loggedIn=loggedIn
+                                   )
 # Task 3: Create a route for deleteMenuItem function here
+
 
 @app.route('/catalog/<string:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(item_id):
     loggedIn = True
     if 'username' not in login_session:
         return redirect('/login')
-    deleteItem = session.query(Item).filter_by(id = item_id).one()
+    deleteItem = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
             session.delete(deleteItem)
             session.commit()
             flash("item was deleted")
             return redirect(url_for('catalog'))
     else:
-            return render_template('deleteitem.html', item_id = item_id, loggedIn=loggedIn)
-    
-
+            return render_template(
+                                   'deleteitem.html',
+                                   item_id=item_id,
+                                   loggedIn=loggedIn
+                                   )
 
 
 if __name__ == '__main__':
         app.secret_key = 'super_secret_key'
         app.debug = True
-        app.run(host = '0.0.0.0', port = 5000)
+        app.run(host='0.0.0.0', port=5000)

@@ -26,26 +26,30 @@ session.add(category1)
 session.commit()
 
 
-item1 = Item(itemname="Cat", description="Cute mamal with paws", category=category1)
+item1 = Item(itemname="Cat",
+             description="Cute mamal with paws", category=category1)
 
 session.add(item1)
 session.commit()
 
-item2 = Item(itemname="Dog", description="Cute mamal with four legs and two eyes", category=category1)
+item2 = Item(itemname="Dog",
+             description="Cute mamal with four legs and two eyes",
+             category=category1)
 
 session.add(item2)
 session.commit()
 
-item3 = Item(itemname="Rabbit", description="Cute mamal with two ears", category=category1)
+item3 = Item(itemname="Rabbit",
+             description="Cute mamal with two ears", category=category1)
 
 session.add(item3)
 session.commit()
 
-item4 = Item(itemname="Mouse", description="Tiny mamal with a nose", category=category1)
+item4 = Item(itemname="Mouse",
+             description="Tiny mamal with a nose", category=category1)
 
 session.add(item4)
 session.commit()
-
 
 
 # Items for Birds
@@ -55,16 +59,17 @@ session.add(category2)
 session.commit()
 
 
-item1 = Item(itemname="Parrot", description="Large bird with a beak", category=category2)
+item1 = Item(itemname="Parrot",
+             description="Large bird with a beak", category=category2)
 
 session.add(item1)
 session.commit()
 
-item2 = Item(itemname="Budgie", description="Tiny bird with beautiful colors", category=category2)
+item2 = Item(itemname="Budgie",
+             description="Tiny bird with beautiful colors", category=category2)
 
 session.add(item2)
 session.commit()
-
 
 
 # Items for Reptiles
@@ -74,17 +79,21 @@ session.add(category3)
 session.commit()
 
 
-item1 = Item(itemname="Frog", description="Cute mamal with paws", category=category3)
+item1 = Item(itemname="Frog",
+             description="Cute mamal with paws", category=category3)
 
 session.add(item1)
 session.commit()
 
-item2 = Item(itemname="Chameleon", description="Cute reptile with eyes going in seperate directions", category=category3)
+item2 = Item(itemname="Chameleon",
+             description="Cute reptile with eyes going in seperate directions",
+             category=category3)
 
 session.add(item2)
 session.commit()
 
-item3 = Item(itemname="Salamander", description="Fast reptile with long tail", category=category3)
+item3 = Item(itemname="Salamander",
+             description="Fast reptile with long tail", category=category3)
 
 session.add(item3)
 session.commit()

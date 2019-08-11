@@ -15,6 +15,7 @@ class User(Base):
     username = Column(String(250), nullable=False)
     password_hash = Column(String(250))
 
+
 class Category(Base):
     __tablename__ = 'category'
 
@@ -28,6 +29,7 @@ class Category(Base):
             'name': self.categoryname,
             'id': self.id,
         }
+
 
 class Item(Base):
     __tablename__ = 'item'
@@ -52,6 +54,5 @@ class Item(Base):
         }
 
 engine = create_engine('sqlite:///catalog.db?check_same_thread=False')
-
 
 Base.metadata.create_all(engine)
