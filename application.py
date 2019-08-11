@@ -137,7 +137,8 @@ def gdisconnect():
     print('In gdisconnect access token is %s', access_token)
     print('User name is: ')
     print(login_session['username'])
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % \
+        login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print('result is ')
@@ -256,7 +257,8 @@ def editItem(item_id):
     if 'username' not in login_session:
         return redirect('/login')
     item = session.query(Item).filter_by(id=item_id).one()
-    if 'username' != login_session['username']:
+    user = session.query(User).filter_by(username=login_session['username']).one()
+    if item.user_id != user.id:
         return "<script>function myFunction() {alert('You\
         are not authorized to edit this item.\
         Please create your own item in order\
@@ -292,6 +294,13 @@ def deleteItem(item_id):
     loggedIn = True
     if 'username' not in login_session:
         return redirect('/login')
+    item = session.query(Item).filter_by(id=item_id).one()
+    user = session.query(User).filter_by(username=login_session['username']).one()
+    if item.user_id != user.id:
+        return "<script>function myFunction() {alert('You\
+        are not authorized to edit this item.\
+        Please create your own item in order\
+        to edit.');}</script><body onload='myFunction()'>"
     deleteItem = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
             session.delete(deleteItem)
