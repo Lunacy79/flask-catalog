@@ -41,6 +41,7 @@
                                }, 4000);
                         },
                         error:function(result){
+                          console.log("fail")
                             alert(JSON.stringify(result))
                                setTimeout(function() {
                                 window.location.href = "/login";

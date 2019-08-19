@@ -18,6 +18,10 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
+# User
+# User1 = User(username="Carolin Ivens", email="carolin.ivens@gmail.com")
+# session.add(User1)
+# session.commit()
 
 # Items for Mamals
 category1 = Category(categoryname='Mamals')

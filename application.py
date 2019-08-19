@@ -107,21 +107,48 @@ def gconnect():
     data = answer.json()
 
     login_session['username'] = data['name']
-    login_session['picture'] = data['picture']
     login_session['email'] = data['email']
+
+    # see if user exists, if it doesn't make a new one
+    user_id = getUserID(login_session['email'])
+    if not user_id:
+        user_id = createUser(login_session)
+    login_session['user_id'] = user_id
 
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
     output += '!</h1>'
     output += '<img src="'
-    output += login_session['picture']
     output += """ style = "width: 300px; height: 300px;
     border-radius: 150px; -webkit-border-radius: 150px;
     -moz-border-radius: 150px;"> """
     flash("you are now logged in as %s" % login_session['username'])
     print("done!")
     return output
+
+
+def createUser(login_session):
+    newUser = User(username=login_session['username'], email=login_session[
+                   'email'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    print(user.id)
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
 
 
 @app.route('/gdisconnect')
@@ -148,7 +175,6 @@ def gdisconnect():
         del login_session['gplus_id']
         del login_session['username']
         del login_session['email']
-        del login_session['picture']
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return redirect("/catalog")
@@ -237,7 +263,8 @@ def newItem():
     if request.method == 'POST':
             newItem = Item(itemname=request.form['name'],
                            description=request.form['description'],
-                           category_id=request.form['category']
+                           category_id=request.form['category'],
+                           user_id=login_session['user_id']
                            )
             session.add(newItem)
             session.commit()
@@ -257,7 +284,11 @@ def editItem(item_id):
     if 'username' not in login_session:
         return redirect('/login')
     item = session.query(Item).filter_by(id=item_id).one()
-    user = session.query(User).filter_by(username=login_session['username']).one()
+    print('username', login_session['username'])
+    user = session.query(User).filter_by(
+                                         username=login_session['username']
+                                         ).one()
+    print('user', user.id, item.user_id)
     if item.user_id != user.id:
         return "<script>function myFunction() {alert('You\
         are not authorized to edit this item.\
@@ -295,7 +326,9 @@ def deleteItem(item_id):
     if 'username' not in login_session:
         return redirect('/login')
     item = session.query(Item).filter_by(id=item_id).one()
-    user = session.query(User).filter_by(username=login_session['username']).one()
+    user = session.query(User).filter_by(
+                                         username=login_session['username']
+                                         ).one()
     if item.user_id != user.id:
         return "<script>function myFunction() {alert('You\
         are not authorized to edit this item.\

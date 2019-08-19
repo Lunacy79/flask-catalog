@@ -13,7 +13,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     username = Column(String(250), nullable=False)
-    password_hash = Column(String(250))
+    email = Column(String(250), nullable=False)
 
 
 class Category(Base):
@@ -41,7 +41,10 @@ class Item(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
     category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship(Category)
+    category = relationship(
+                            Category, cascade="all, delete-orphan",
+                            single_parent=True
+                            )
 
     @property
     def serialize(self):
@@ -54,6 +57,7 @@ class Item(Base):
         }
 
 
-engine = create_engine('sqlite:///catalog.db?check_same_thread=False')
+engine = create_engine('sqlite:///catalog.db',
+                       connect_args={'check_same_thread': False})
 
 Base.metadata.create_all(engine)
